@@ -59,43 +59,43 @@ impl Ds1 {
             )?;
             self.chr_dbg = self.process.scan_abs(
                 "all_no_stamina_consume",
-                &offsets::all_no_stamina_consume_aob,
-                offsets::all_no_stamina_consume_aob_offset,
+                &offsets::ALL_NO_STAMINA_CONSUME_AOB,
+                offsets::ALL_NO_STAMINA_CONSUME_AOB_OFFSET,
                 vec![0x0],
             )?;
 
             self.chr_data_1 = self.process.scan_abs(
                 "chr_data_1",
-                &offsets::char_data_1_aob,
-                offsets::char_data_1_aob_offset,
+                &offsets::CHAR_DATA_1_AOB,
+                offsets::CHAR_DATA_1_AOB_OFFSET,
                 vec![
-                    offsets::char_data_1_offset1,
-                    offsets::char_data_1_offset2,
-                    offsets::char_data_1_offset3,
+                    offsets::CHAR_DATA_1_OFFSET1,
+                    offsets::CHAR_DATA_1_OFFSET2,
+                    offsets::CHAR_DATA_1_OFFSET3,
                 ],
             )?;
 
             self.char_map_data = self.process.scan_abs(
                 "chr_map_data",
-                &offsets::char_data_1_aob,
-                offsets::char_data_1_aob_offset,
+                &offsets::CHAR_DATA_1_AOB,
+                offsets::CHAR_DATA_1_AOB_OFFSET,
                 vec![
-                    offsets::char_data_1_offset1,
-                    offsets::char_data_1_offset2,
-                    offsets::char_data_1_offset3,
+                    offsets::CHAR_DATA_1_OFFSET1,
+                    offsets::CHAR_DATA_1_OFFSET2,
+                    offsets::CHAR_DATA_1_OFFSET3,
                     CharData1::CHAR_MAP_DATA_PTR,
                 ],
             )?;
 
             self.char_pos_data = self.process.scan_abs(
                 "chr_pos_data",
-                &offsets::char_data_1_aob,
-                offsets::char_data_1_aob_offset,
+                &offsets::CHAR_DATA_1_AOB,
+                offsets::CHAR_DATA_1_AOB_OFFSET,
                 vec![
                     0x0,
-                    offsets::char_data_1_offset1,
-                    offsets::char_data_1_offset2,
-                    offsets::char_data_1_offset3,
+                    offsets::CHAR_DATA_1_OFFSET1,
+                    offsets::CHAR_DATA_1_OFFSET2,
+                    offsets::CHAR_DATA_1_OFFSET3,
                     CharData1::CHAR_MAP_DATA_PTR,
                     CharMapData::CHAR_POS_DATA_PTR,
                 ],
