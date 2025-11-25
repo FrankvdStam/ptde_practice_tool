@@ -1,78 +1,11 @@
+mod constants;
+
 use mem_rs::prelude::*;
+use crate::memory::ds1::constants::*;
 
-struct SendProcess(Process);
-
-unsafe impl Send for SendProcess {}
-unsafe impl Sync for SendProcess {}
-
-struct SendPointer(Pointer);
-unsafe impl Sync for SendPointer {}
-
-unsafe impl Send for SendPointer {}
-
-pub struct ChrDbg;
-impl ChrDbg {
-    pub const ALL_NO_STAMINA_CONSUME: usize = 0;
-    pub const ALL_NO_MPCONSUME: usize = 1;
-    pub const ALL_NO_ARROW_CONSUME: usize = 2;
-    pub const PLAYER_HIDE: usize = 3;
-    pub const PLAYER_SILENCE: usize = 4;
-    pub const ALL_NO_DEAD: usize = 5;
-    pub const ALL_NO_DAMAGE: usize = 6;
-    pub const ALL_NO_HIT: usize = 7;
-    pub const ALL_NO_ATTACK: usize = 8;
-    pub const ALL_NO_MOVE: usize = 9;
-    pub const ALL_NO_UPDATE_AI: usize = 0xA;
-}
-
-pub struct DrawMap;
-impl DrawMap {
-    pub const DRAW_MAP: usize = 0;
-    pub const DRAW_OBJECTS: usize = 0;
-    pub const DRAW_CREATURES: usize = 0;
-    pub const DRAW_SFX: usize = 0;
-}
-
-pub struct CharData1;
-impl CharData1 {
-    pub const CHAR_MAP_DATA_PTR: usize = 0x28;
-    pub const CHR_TYPE: usize = 0x70;
-    pub const TEAM_TYPE: usize = 0x74;
-    pub const FORCE_PLAY_ANIMATION: usize = 0xFC;
-    pub const CHAR_FLAGS_1: usize = 0x1FC;
-    pub const PLAY_REGION: usize = 0x284;
-    pub const HP: usize = 0x2D4;
-    pub const STAMINA: usize = 0x2E4;
-    pub const CHAR_FLAGS_2: usize = 0x3C4;
-    pub const STORED_ITEM: usize = 0x628;
-}
-
-pub struct CharMapData;
-impl CharMapData {
-    pub const ANIM_DATA_PTR: usize = 0x14;
-    pub const CHAR_POS_DATA_PTR: usize = 0x1C;
-    pub const CHAR_MAP_FLAGS: usize = 0xC4;
-    pub const WARP: usize = 0xC8;
-    pub const WARP_X: usize = 0xD0;
-    pub const WARP_Y: usize = 0xD4;
-    pub const WARP_Z: usize = 0xD8;
-    pub const WARP_ANGLE: usize = 0xD4;
-}
-
-pub struct AnimData;
-impl AnimData {
-    pub const PLAY_SPEED: usize = 0x64;
-}
-
-pub struct CharPosData;
-impl CharPosData {
-    pub const POS_ANGLE: usize = 0x4;
-    pub const POS_X: usize = 0x10;
-    pub const POS_Y: usize = 0x14;
-    pub const POS_Z: usize = 0x18;
-}
-
-pub struct Ds1 {
+#[allow(dead_code)]
+pub struct Ds1
+{
     pos_lock_aob: String,
     pos_lock_1_aob_offset: usize,
     pos_lock_2_aob_offset: usize,
@@ -118,6 +51,16 @@ pub struct Ds1 {
     no_stam_consume: bool,
 }
 
+struct SendProcess(Process);
+
+unsafe impl Send for SendProcess {}
+unsafe impl Sync for SendProcess {}
+
+struct SendPointer(Pointer);
+unsafe impl Sync for SendPointer {}
+
+unsafe impl Send for SendPointer {}
+
 impl Ds1 {
     pub fn new() -> Self {
         hudhook::alloc_console().ok();
@@ -151,12 +94,6 @@ impl Ds1 {
             char_data_1_offset2 : 0x4,
             char_data_1_offset3 : 0x0,
 
-
-
-
-
-
-
             process: SendProcess(Process::new("DARKSOULS.exe")),
             chr_dbg: SendPointer(Pointer::default()),
             pos_lock: SendPointer(Pointer::default()),
@@ -172,7 +109,7 @@ impl Ds1 {
             char_pos_data: SendPointer(Pointer::default()),
             no_stam_consume: false,
         };
-        Self::refresh(&mut ds1struct);
+        let _ = ds1struct.refresh();
         ds1struct
     }
     // Pointers are declared here
@@ -238,13 +175,13 @@ impl Ds1 {
         Ok(())
     }
 
-    pub fn get_HP(&self) -> u32 {
+    pub fn get_hp(&self) -> u32 {
         let hp = self.chr_data_2.0.read_u32_rel(Some(0x2d4));
         print!("{:?}", hp);
         return hp;
     }
 
-    pub fn get_Stamina(&self) -> u32 {
+    pub fn get_stamina(&self) -> u32 {
         let stam = self.chr_data_2.0.read_u32_rel(Some(0x2e4));
         return stam;
     }
@@ -282,7 +219,7 @@ impl Ds1 {
 
     pub fn set_no_stam_consume(&mut self) -> bool {
         let no_stamina_consume = self.get_no_stam_consume();
-        if (no_stamina_consume == false) {
+        if no_stamina_consume == false {
             self.chr_dbg
                 .0
                 .write_u8_rel(Some(ChrDbg::ALL_NO_STAMINA_CONSUME), 0x1);
@@ -296,7 +233,7 @@ impl Ds1 {
 
     pub fn set_no_update_ai(&mut self) -> bool {
         let no_update_ai = self.get_no_update_ai();
-        if (no_update_ai == false) {
+        if no_update_ai == false {
             self.chr_dbg
                 .0
                 .write_u8_rel(Some(ChrDbg::ALL_NO_UPDATE_AI), 0x1);
