@@ -10,9 +10,6 @@ fn main() {
     print!("test");
     Process::by_name("DARKSOULS.exe")
         .unwrap()
-        .inject(
-            cur_dll
-                .into(),
-        )
+        .inject(cur_dll.into())
         .unwrap();
 }

@@ -29,6 +29,9 @@ impl ImguiRenderLoop for Ds1 {
             .build(|| {
                 ui.text(format!("HP {:?}", self.get_HP()));
                 ui.text(format!("Stamina {:?}", self.get_Stamina()));
+                ui.text(format!("Pos X {:?}", self.get_x_pos()));
+                ui.text(format!("Pos Y {:?}", self.get_y_pos()));
+                ui.text(format!("Pos Z {:?}", self.get_z_pos()));
 
                 if (ui.button("Eject")) {
                     print!("test");

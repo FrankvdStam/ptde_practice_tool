@@ -47,6 +47,31 @@ impl CharData1 {
     pub const STORED_ITEM: usize = 0x628;
 }
 
+pub struct CharMapData;
+impl CharMapData {
+    pub const ANIM_DATA_PTR: usize = 0x14;
+    pub const CHAR_POS_DATA_PTR: usize = 0x1C;
+    pub const CHAR_MAP_FLAGS: usize = 0xC4;
+    pub const WARP: usize = 0xC8;
+    pub const WARP_X: usize = 0xD0;
+    pub const WARP_Y: usize = 0xD4;
+    pub const WARP_Z: usize = 0xD8;
+    pub const WARP_ANGLE: usize = 0xD4;
+}
+
+pub struct AnimData;
+impl AnimData {
+    pub const PLAY_SPEED: usize = 0x64;
+}
+
+pub struct CharPosData;
+impl CharPosData {
+    pub const POS_ANGLE: usize = 0x4;
+    pub const POS_X: usize = 0x10;
+    pub const POS_Y: usize = 0x14;
+    pub const POS_Z: usize = 0x18;
+}
+
 pub struct Ds1 {
     pos_lock_aob: String,
     pos_lock_1_aob_offset: usize,
@@ -88,7 +113,8 @@ pub struct Ds1 {
     compass: SendPointer,                       // 0xC 0x15, 0x1E
     chr_data_1: SendPointer,                    // 0x2, 0x0, 0x4, 0x0
     char_map_data: SendPointer,                 // chr_data_1 (aob), 0x2, 0x0, 0x4, 0x0 0x2
-    chr_data_2: SendPointer,                    // 0x1, 0x0, 0x8
+    chr_data_2: SendPointer,
+    char_pos_data: SendPointer, // 0x1, 0x0, 0x8
     no_stam_consume: bool,
 }
 
@@ -129,6 +155,8 @@ impl Ds1 {
 
 
 
+
+
             process: SendProcess(Process::new("DARKSOULS.exe")),
             chr_dbg: SendPointer(Pointer::default()),
             pos_lock: SendPointer(Pointer::default()),
@@ -141,6 +169,7 @@ impl Ds1 {
             chr_data_1: SendPointer(Pointer::default()),
             char_map_data: SendPointer(Pointer::default()),
             chr_data_2: SendPointer(Pointer::default()),
+            char_pos_data: SendPointer(Pointer::default()),
             no_stam_consume: false,
         };
         Self::refresh(&mut ds1struct);
@@ -163,7 +192,45 @@ impl Ds1 {
                 self.all_no_stamina_consume_aob_offset,
                 vec![0x0],
             )?);
-            self.chr_dbg.0.debug = true;
+
+            self.chr_data_1 = SendPointer(self.process.0.scan_abs(
+                "chr_data_1",
+                &self.char_data_1_aob,
+                self.char_data_1_aob_offset,
+                vec![
+                    self.char_data_1_offset1,
+                    self.char_data_1_offset2,
+                    self.char_data_1_offset3,
+                ],
+            )?);
+
+            self.char_map_data = SendPointer(self.process.0.scan_abs(
+                "chr_map_data",
+                &self.char_data_1_aob,
+                self.char_data_1_aob_offset,
+                vec![
+                    self.char_data_1_offset1,
+                    self.char_data_1_offset2,
+                    self.char_data_1_offset3,
+                    CharData1::CHAR_MAP_DATA_PTR,
+                ],
+            )?);
+
+            self.char_pos_data = SendPointer(self.process.0.scan_abs(
+                "chr_pos_data",
+                &self.char_data_1_aob,
+                self.char_data_1_aob_offset,
+                vec![
+                    0x0,
+                    self.char_data_1_offset1,
+                    self.char_data_1_offset2,
+                    self.char_data_1_offset3,
+                    CharData1::CHAR_MAP_DATA_PTR,
+                    CharMapData::CHAR_POS_DATA_PTR,
+                ],
+            )?);
+
+            self.char_pos_data.0.debug = true;
         } else {
             self.process.0.refresh()?;
         }
@@ -181,6 +248,24 @@ impl Ds1 {
         let stam = self.chr_data_2.0.read_u32_rel(Some(0x2e4));
         return stam;
     }
+
+
+    pub fn get_x_pos(&self) ->f32 {
+        let x_pos = self.char_pos_data.0.read_f32_rel(Some(CharPosData::POS_X));
+        x_pos
+    }
+
+    pub fn get_y_pos(&self) ->f32 {
+        let x_pos = self.char_pos_data.0.read_f32_rel(Some(CharPosData::POS_Y));
+        x_pos
+    }
+
+    pub fn get_z_pos(&self) ->f32 {
+        let x_pos = self.char_pos_data.0.read_f32_rel(Some(CharPosData::POS_Z));
+        x_pos
+    }
+    
+
 
     pub fn get_no_stam_consume(&mut self) -> bool {
         let no_stamina_consume = self
