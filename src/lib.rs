@@ -1,4 +1,3 @@
-#![allow(static_mut_refs)]
 #![allow(dead_code)]
 
 use hudhook::*;
